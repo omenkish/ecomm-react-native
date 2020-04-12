@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Platform } from 'react-native';
 
 import ProductOverviewScreen from '../screens/shop/ProductsOverview';
+import ProductDetailsScreen from '../screens/shop/ProductDetails';
 import Colors from '../constants/Colors';
 
 const Stack = createStackNavigator();
@@ -22,6 +23,13 @@ const productsNavigator = () => {
         options={{
           title: 'All Products',
         }}
+      />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailsScreen}
+        options={({ route }) => ({
+          title: route.params.item.title,
+        })}
       />
     </Stack.Navigator>
   );
