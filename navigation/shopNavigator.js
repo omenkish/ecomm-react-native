@@ -16,6 +16,7 @@ const productsNavigator = () => {
           backgroundColor: Platform.OS === 'android' ? Colors.primary : 'white',
         },
         headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+        headerTitleStyle: { fontFamily: 'OpenSans-Regular' },
       }}>
       <Stack.Screen
         name="Products"

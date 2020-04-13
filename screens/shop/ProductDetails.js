@@ -13,7 +13,7 @@ const ProductDetailScreen = props => {
   const { item } = props.route.params;
 
   return (
-    <ScrollView>
+    <ScrollView style={styles.container}>
       <Image source={{ uri: item.imageUrl }} style={styles.image} />
       <View style={styles.actions}>
         <Button title="Add to Cart" color={Colors.primary} />
@@ -25,19 +25,24 @@ const ProductDetailScreen = props => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: 10,
+  },
   image: {
     width: '100%',
     height: 300,
   },
   price: {
+    fontFamily: 'OpenSans-Regular',
     fontSize: 20,
     color: '#888',
     textAlign: 'center',
   },
   description: {
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: 'justify',
     marginHorizontal: 20,
+    fontFamily: 'OpenSans-Regular',
   },
   actions: {
     flexDirection: 'row',
