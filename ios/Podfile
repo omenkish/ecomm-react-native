@@ -77,7 +77,6 @@ target 'shopping_app' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
   target 'shopping_appTests' do
     inherit! :complete
