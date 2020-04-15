@@ -11,7 +11,7 @@ const CartItem = ({ item, onRemove, addItem, reduceItemQty }) => {
         <Text style={styles.text}>{item.productTitle}</Text>
         <View style={styles.quantityContainer}>
           <TouchableOpacity onPress={reduceItemQty}>
-            <Text style={styles.plus}>-</Text>
+            <Text style={styles.minus}>-</Text>
           </TouchableOpacity>
           <Text style={styles.quantity}>Qty: {item.quantity} </Text>
           <TouchableOpacity onPress={addItem}>
@@ -19,7 +19,7 @@ const CartItem = ({ item, onRemove, addItem, reduceItemQty }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.itemData}>
+      <View style={{ ...styles.itemData, ...styles.price }}>
         <Text style={styles.text}>${item.sum.toFixed(2)}</Text>
         <TouchableOpacity onPress={onRemove} style={styles.deleteButton}>
           <Icon name="trash" size={23} color={Colors.primary} />
@@ -37,13 +37,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   itemData: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'row',
     alignItems: 'center',
   },
   addedStyle: {
     flex: 3,
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   quantity: {
     fontFamily: 'OpenSans-Bold',
@@ -60,10 +60,21 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 0.1,
+    borderColor: '#888',
+    borderRadius: 4,
+    padding: 6,
   },
   plus: {
     fontSize: 20,
-    paddingLeft: 8,
+  },
+  minus: {
+    fontSize: 20,
+    marginRight: 5,
+  },
+  price: {
+    justifyContent: 'space-around',
   },
 });
 
