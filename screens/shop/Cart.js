@@ -8,6 +8,7 @@ import {
   reduceQuantity,
   deleteFromCart,
 } from '../../redux/actions/cart';
+import { addOrder } from '../../redux/actions/orders';
 
 const CartScreen = props => {
   const cartTotalAmount = useSelector(state => state.cart.totalAmount);
@@ -37,6 +38,7 @@ const CartScreen = props => {
           title="Order Now"
           color={Colors.accent}
           disabled={cartItems.length === 0}
+          onPress={() => dispatch(addOrder(cartItems, cartTotalAmount))}
         />
       </View>
       <View style={styles.items}>

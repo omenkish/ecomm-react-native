@@ -1,10 +1,14 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import ProductOverviewScreen from '../screens/shop/ProductsOverview';
 import ProductDetailsScreen from '../screens/shop/ProductDetails';
 import CartScreen from '../screens/shop/Cart';
+import OrdersScreen from '../screens/shop/Orders';
 import Colors from '../constants/Colors';
 import HeaderIcon from '../components/UI/HeaderIcon';
 
@@ -45,10 +49,71 @@ const productsNavigator = () => {
       <Stack.Screen
         name="Cart"
         component={CartScreen}
-        options={{ title: 'Cart' }}
+        options={{ title: 'Your Cart' }}
       />
     </Stack.Navigator>
   );
 };
 
-export default productsNavigator;
+const ShopTabNavigator = () => {
+  const android = Platform.OS === 'android';
+  let Tab = createBottomTabNavigator();
+  if (android) {
+    Tab = createMaterialBottomTabNavigator();
+  }
+  return (
+    <Tab.Navigator
+      activeColor={Colors.primary}
+      barStyle={styles.barStyle}
+      tabBarOptions={{
+        activeTintColor: 'white',
+      }}
+      shifting={true}>
+      <Tab.Screen
+        name="Products"
+        component={productsNavigator}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon name="home" size={25} color={color} />
+          ),
+          tabBarLabel:
+            Platform.OS === 'android' ? (
+              <Text style={styles.tabLabel}>Products</Text>
+            ) : (
+              'Products'
+            ),
+          tabBarColor: Colors.primaryColor,
+        }}
+      />
+      <Tab.Screen
+        name="Orders"
+        component={OrdersScreen}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon name="product-hunt" size={25} color={color} />
+          ),
+          tabBarLabel: android ? (
+            <Text style={styles.tabLabel}>Orders</Text>
+          ) : (
+            'Orders'
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
+
+const styles = StyleSheet.create({
+  tabLabel: {
+    fontFamily: 'OpenSans-Bold',
+  },
+  barStyle: {
+    backgroundColor: 'white',
+    shadowColor: 'black',
+    shadowOpacity: 0.26,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 5,
+  },
+});
+export default ShopTabNavigator;
