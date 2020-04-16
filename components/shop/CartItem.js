@@ -10,20 +10,26 @@ const CartItem = ({ item, onRemove, addItem, reduceItemQty }) => {
       <View style={{ ...styles.itemData, ...styles.addedStyle }}>
         <Text style={styles.text}>{item.productTitle}</Text>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity onPress={reduceItemQty}>
-            <Text style={styles.minus}>-</Text>
-          </TouchableOpacity>
+          {reduceItemQty && (
+            <TouchableOpacity onPress={reduceItemQty}>
+              <Text style={styles.minus}>-</Text>
+            </TouchableOpacity>
+          )}
           <Text style={styles.quantity}>Qty: {item.quantity} </Text>
-          <TouchableOpacity onPress={addItem}>
-            <Text style={styles.plus}>+</Text>
-          </TouchableOpacity>
+          {addItem && (
+            <TouchableOpacity onPress={addItem}>
+              <Text style={styles.plus}>+</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <View style={{ ...styles.itemData, ...styles.price }}>
         <Text style={styles.text}>${item.sum.toFixed(2)}</Text>
-        <TouchableOpacity onPress={onRemove} style={styles.deleteButton}>
-          <Icon name="trash" size={23} color={Colors.primary} />
-        </TouchableOpacity>
+        {onRemove && (
+          <TouchableOpacity onPress={onRemove} style={styles.deleteButton}>
+            <Icon name="trash" size={23} color={Colors.primary} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
