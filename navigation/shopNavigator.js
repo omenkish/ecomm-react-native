@@ -7,10 +7,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import ProductOverviewScreen from '../screens/shop/ProductsOverview';
 import ProductDetailsScreen from '../screens/shop/ProductDetails';
+import UserProductsScreen from '../screens/user/UserProducts';
 import CartScreen from '../screens/shop/Cart';
 import OrdersScreen from '../screens/shop/Orders';
 import Colors from '../constants/Colors';
 import HeaderIcon from '../components/UI/HeaderIcon';
+import EditProductScreen from '../screens/user/EditProducts';
 
 const Stack = createStackNavigator();
 
@@ -49,7 +51,44 @@ const productsNavigator = () => {
       <Stack.Screen
         name="Cart"
         component={CartScreen}
-        options={{ title: 'Your Cart' }}
+        options={{ title: 'My Cart' }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const userProducts = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Platform.OS === 'android' ? Colors.primary : 'white',
+        },
+        headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+        headerTitleStyle: { fontFamily: 'OpenSans-Regular' },
+      }}>
+      <Stack.Screen
+        name="Admin"
+        component={UserProductsScreen}
+        options={props => ({
+          title: 'My Products',
+          headerRight: () => (
+            <HeaderIcon
+              title="Add"
+              iconName="plus"
+              iconTitle="Add"
+              handlePress={() => props.navigation.navigate('Edit Product')}
+            />
+          ),
+        })}
+      />
+
+      <Stack.Screen
+        name="Edit Product"
+        component={EditProductScreen}
+        options={({ route }) => ({
+          title: route.params ? route.params.item.title : 'Add Product',
+        })}
       />
     </Stack.Navigator>
   );
@@ -83,6 +122,20 @@ const ShopTabNavigator = () => {
               'Products'
             ),
           tabBarColor: Colors.primaryColor,
+        }}
+      />
+      <Tab.Screen
+        name="Admin"
+        component={userProducts}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Icon name="user-secret" size={25} color={color} />
+          ),
+          tabBarLabel: android ? (
+            <Text style={styles.tabLabel}>My Products</Text>
+          ) : (
+            'My Products'
+          ),
         }}
       />
       <Tab.Screen
