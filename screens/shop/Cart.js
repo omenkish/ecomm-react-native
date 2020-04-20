@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+
 import Colors from '../../constants/Colors';
 import CartItem from '../../components/shop/CartItem';
 import {
@@ -9,6 +10,7 @@ import {
   deleteFromCart,
 } from '../../redux/actions/cart';
 import { addOrder } from '../../redux/actions/orders';
+import Card from '../../components/UI/Card';
 
 const CartScreen = props => {
   const cartTotalAmount = useSelector(state => state.cart.totalAmount);
@@ -29,7 +31,7 @@ const CartScreen = props => {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.summary}>
+      <Card style={styles.summary}>
         <Text style={styles.summaryText}>
           Total:{' '}
           <Text style={styles.amount}>
@@ -42,7 +44,7 @@ const CartScreen = props => {
           disabled={cartItems.length === 0}
           onPress={() => dispatch(addOrder(cartItems, cartTotalAmount))}
         />
-      </View>
+      </Card>
       <View style={styles.items}>
         <FlatList
           data={cartItems}
@@ -71,13 +73,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
     padding: 10,
-    shadowColor: 'black',
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    borderRadius: 10,
-    elevation: 5,
-    backgroundColor: 'white',
   },
   summaryText: {
     fontFamily: 'OpenSans-bold',
