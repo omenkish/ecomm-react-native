@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, Button, FlatList } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
-import ProductItem from '../../components/shop/ProductItem';
+import ProductItem from '../../components/shop/productItem';
 import Colors from '../../constants/Colors';
 import { deleteProduct } from '../../redux/actions/products';
 

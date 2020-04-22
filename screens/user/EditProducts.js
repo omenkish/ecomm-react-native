@@ -1,16 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useReducer } from 'react';
 import {
+  View,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
-  View,
+  StyleSheet,
+  Platform,
   Alert,
 } from 'react-native';
+
 import HeaderIcon from '../../components/UI/HeaderIcon';
 import { useDispatch } from 'react-redux';
 import { addProduct, updateProduct } from '../../redux/actions/products';
+import Input from '../../components/UI/Input';
 
 const headerIcon = (props, handleSubmit) => {
   props.navigation.setOptions({
@@ -26,6 +29,7 @@ const headerIcon = (props, handleSubmit) => {
 };
 
 const UPDATE_FORM_INPUT = 'UPDATE_FORM_INPUT';
+
 const formReducer = (state, action) => {
   if (action.type === UPDATE_FORM_INPUT) {
     const updatedValues = {
@@ -34,11 +38,9 @@ const formReducer = (state, action) => {
     };
     const updatedValidities = {
       ...state.inputValidities,
-      [action.input]: action.value,
+      [action.input]: action.isValid,
     };
-
     let updatedFormIsValid = true;
-
     for (const key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
     }
@@ -73,6 +75,7 @@ const EditProductScreen = props => {
   });
 
   const { title, imageUrl, description, price } = formState.inputValues;
+
   const product = {
     title,
     imageUrl,
@@ -80,13 +83,12 @@ const EditProductScreen = props => {
     price: +price,
   };
 
-  const handleSubmit = useCallback(() => {
+  const submitHandler = useCallback(() => {
     if (!formState.formIsValid) {
-      return Alert.alert(
-        'Wrong input!',
-        'Please check the errors in the form.',
-        [{ text: 'Okay' }],
-      );
+      Alert.alert('Wrong input!', 'Please check the errors in the form.', [
+        { text: 'Okay' },
+      ]);
+      return;
     }
     if (item) {
       product.id = item.id;
@@ -95,13 +97,24 @@ const EditProductScreen = props => {
       dispatch(addProduct(product));
     }
     props.navigation.goBack();
-  }, [dispatch, product]);
+  }, [dispatch, item ? item.id : '', formState]);
 
   useEffect(() => {
-    headerIcon(props, handleSubmit);
-  }, [handleSubmit]);
+    headerIcon(props, submitHandler);
+  }, [submitHandler]);
 
-  const handleFormInput = (inputIdentifier, text) => {
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: UPDATE_FORM_INPUT,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState],
+  );
+  const textChangeHandler = (inputIdentifier, text) => {
     let isValid = false;
     if (text.trim().length > 0) {
       isValid = true;
@@ -121,28 +134,34 @@ const EditProductScreen = props => {
           <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
-            value={title}
-            onChangeText={handleFormInput.bind(this, 'title')}
-            autoCapitalize="words"
+            value={formState.inputValues.title}
+            onChangeText={textChangeHandler.bind(this, 'title')}
+            keyboardType="default"
+            autoCapitalize="sentences"
             autoCorrect
             returnKeyType="next"
+            onEndEditing={() => console.log('onEndEditing')}
+            onSubmitEditing={() => console.log('onSubmitEditing')}
           />
+          {!formState.inputValidities.title && (
+            <Text>Please enter a valid title!</Text>
+          )}
         </View>
         <View style={styles.formControl}>
           <Text style={styles.label}>Image URL</Text>
           <TextInput
             style={styles.input}
-            value={imageUrl}
-            onChangeText={handleFormInput.bind(this, 'imageUrl')}
+            value={formState.inputValues.imageUrl}
+            onChangeText={textChangeHandler.bind(this, 'imageUrl')}
           />
         </View>
-        {!item && (
+        {item ? null : (
           <View style={styles.formControl}>
             <Text style={styles.label}>Price</Text>
             <TextInput
               style={styles.input}
-              value={price}
-              onChangeText={handleFormInput.bind(this, 'price')}
+              value={formState.inputValues.price}
+              onChangeText={textChangeHandler.bind(this, 'price')}
               keyboardType="decimal-pad"
             />
           </View>
@@ -151,8 +170,8 @@ const EditProductScreen = props => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.input}
-            value={description}
-            onChangeText={() => handleFormInput('description')}
+            value={formState.inputValues.description}
+            onChangeText={textChangeHandler.bind(this, 'description')}
           />
         </View>
       </View>
@@ -168,7 +187,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   label: {
-    fontFamily: 'OpenSans-Bold',
+    fontFamily: 'open-sans-bold',
     marginVertical: 8,
   },
   input: {
