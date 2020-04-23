@@ -34,7 +34,16 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = productId => {
-  return { type: DELETE_PRODUCT, productId: productId };
+  return async dispatch => {
+    await fetch(
+      `https://react-native-shopping-fac8a.firebaseio.com/products/${productId}.json`,
+      {
+        method: 'DELETE',
+      },
+    );
+
+    dispatch({ type: DELETE_PRODUCT, productId: productId });
+  };
 };
 
 export const addProduct = product => {
@@ -62,5 +71,20 @@ export const addProduct = product => {
 };
 
 export const updateProduct = product => {
-  return { type: UPDATE_PRODUCT, product: { ...product } };
+  return async dispatch => {
+    const newProduct = { ...product };
+    delete newProduct.price;
+    await fetch(
+      `https://react-native-shopping-fac8a.firebaseio.com/products/${product.id}.json`,
+      {
+        method: 'PATCH',
+        headers: {
+          'content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...newProduct }),
+      },
+    );
+
+    dispatch({ type: UPDATE_PRODUCT, product: { ...product } });
+  };
 };
