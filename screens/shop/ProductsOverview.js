@@ -1,18 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import {
-  ActivityIndicator,
-  Button,
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Button, FlatList, Text, View } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import ProductItem from '../../components/shop/productItem';
 import { addToCart } from '../../redux/actions/cart';
 import Colors from '../../constants/Colors';
 import { fetchProducts } from '../../redux/actions/products';
+import Loader, { styles } from '../../components/UI/Loader';
 
 const ProductsOverviewScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
@@ -62,11 +56,7 @@ const ProductsOverviewScreen = props => {
     );
   }
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
-    );
+    return <Loader size="large" color={Colors.primary} />;
   }
   if (!isLoading && !products.length) {
     return (
@@ -98,13 +88,5 @@ const ProductsOverviewScreen = props => {
     />
   );
 };
-
-const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default ProductsOverviewScreen;

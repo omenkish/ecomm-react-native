@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import {
+  Alert,
+  KeyboardAvoidingView,
   View,
   ScrollView,
   StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
 } from 'react-native';
 
 import HeaderIcon from '../../components/UI/HeaderIcon';
 import { useDispatch } from 'react-redux';
 import { addProduct, updateProduct } from '../../redux/actions/products';
 import Input from '../../components/UI/Input';
+import Loader from '../../components/UI/Loader';
+import Colors from '../../constants/Colors';
 
 const headerIcon = (props, handleSubmit) => {
   props.navigation.setOptions({
@@ -52,6 +54,9 @@ const formReducer = (state, action) => {
 };
 
 const EditProductScreen = props => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const item = props.route.params ? props.route.params.item : null;
 
   const dispatch = useDispatch();
@@ -81,22 +86,33 @@ const EditProductScreen = props => {
     price: +price,
   };
 
-  const submitHandler = useCallback(() => {
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error!', error, [{ text: 'Okay' }]);
+    }
+  }, [error]);
+
+  const submitHandler = useCallback(async () => {
     if (!formState.formIsValid) {
-      console.log('formState', formState);
       Alert.alert('Wrong input!', 'Please check the errors in the form.', [
         { text: 'Okay' },
       ]);
       return;
     }
-    if (item) {
-      console.log('formState', formState);
-      product.id = item.id;
-      dispatch(updateProduct(product));
-    } else {
-      dispatch(addProduct(product));
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (item) {
+        product.id = item.id;
+        await dispatch(updateProduct(product));
+      } else {
+        await dispatch(addProduct(product));
+      }
+      props.navigation.goBack();
+    } catch (err) {
+      setError(err.message);
     }
-    props.navigation.goBack();
   }, [dispatch, item ? item.id : '', formState]);
 
   useEffect(() => {
@@ -115,6 +131,9 @@ const EditProductScreen = props => {
     [dispatchFormState],
   );
 
+  if (isLoading) {
+    <Loader size="large" color={Colors.primary} />;
+  }
   return (
     <KeyboardAvoidingView
       style={styles.keyboard}

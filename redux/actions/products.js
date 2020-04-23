@@ -35,7 +35,7 @@ export const fetchProducts = () => {
 
 export const deleteProduct = productId => {
   return async dispatch => {
-    await fetch(
+    const response = await fetch(
       `https://react-native-shopping-fac8a.firebaseio.com/products/${productId}.json`,
       {
         method: 'DELETE',
@@ -61,6 +61,9 @@ export const addProduct = product => {
       },
     );
 
+    if (!response.ok) {
+      throw new Error('Something went wrong!!');
+    }
     const responseData = await response.json();
 
     dispatch({
@@ -74,8 +77,11 @@ export const updateProduct = product => {
   return async dispatch => {
     const newProduct = { ...product };
     delete newProduct.price;
-    await fetch(
-      `https://react-native-shopping-fac8a.firebaseio.com/products/${product.id}.json`,
+
+    const response = await fetch(
+      `https://react-native-shopping-fac8a.firebaseio.com/products/${
+        product.id
+      }.json`,
       {
         method: 'PATCH',
         headers: {
@@ -85,6 +91,9 @@ export const updateProduct = product => {
       },
     );
 
+    if (!response.ok) {
+      throw new Error('Something went wrong!!');
+    }
     dispatch({ type: UPDATE_PRODUCT, product: { ...product } });
   };
 };
