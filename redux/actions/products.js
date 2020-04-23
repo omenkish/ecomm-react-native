@@ -1,3 +1,5 @@
+import Product from '../../models/product';
+
 export const DELETE_PRODUCT = 'DELETE_PRODUCT';
 export const CREATE_PRODUCT = 'CREATE_PRODUCT';
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
@@ -17,14 +19,16 @@ export const fetchProducts = () => {
       const loadedProducts = [];
 
       for (const key in responseData) {
-        loadedProducts.push({
-          id: key,
-          ownerId: 'u1',
-          title: responseData[key].title,
-          imageUrl: responseData[key].imageUrl,
-          description: responseData[key].description,
-          price: responseData[key].price,
-        });
+        loadedProducts.push(
+          new Product(
+            key,
+            'u1',
+            responseData[key].title,
+            responseData[key].imageUrl,
+            responseData[key].description,
+            responseData[key].price,
+          ),
+        );
       }
       dispatch({ type: SET_PRODUCTS, products: loadedProducts });
     } catch (error) {
