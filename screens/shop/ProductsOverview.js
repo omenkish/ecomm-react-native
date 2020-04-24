@@ -10,6 +10,8 @@ import Loader, { styles } from '../../components/UI/Loader';
 
 const ProductsOverviewScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const [error, setError] = useState(null);
   const products = useSelector(state => state.products.availableProducts);
 
@@ -17,14 +19,14 @@ const ProductsOverviewScreen = props => {
 
   const loadProducts = useCallback(async () => {
     setError(null);
-    setIsLoading(true);
+    setIsRefreshing(true);
     try {
       await dispatch(fetchProducts());
     } catch (err) {
       setError(err.message);
     }
-    setIsLoading(false);
-  }, [dispatch, setIsLoading, setError]);
+    setIsRefreshing(false);
+  }, [dispatch, setError]);
 
   useEffect(() => {
     const willFocusSubscription = props.navigation.addListener(
@@ -36,7 +38,8 @@ const ProductsOverviewScreen = props => {
   }, [loadProducts]);
 
   useEffect(() => {
-    loadProducts();
+    setIsLoading(true);
+    loadProducts().then(() => setIsLoading(false));
   }, [loadProducts]);
 
   const selectItemHandler = item => {
@@ -67,6 +70,8 @@ const ProductsOverviewScreen = props => {
   }
   return (
     <FlatList
+      onRefresh={loadProducts}
+      refreshing={isRefreshing}
       keyExtractor={item => item.id}
       data={products}
       renderItem={({ item }) => (

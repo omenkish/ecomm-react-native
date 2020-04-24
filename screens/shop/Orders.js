@@ -9,25 +9,27 @@ import Colors from '../../constants/Colors';
 
 const OrdersScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
   const orders = useSelector(state => state.orders.orders);
   const dispatch = useDispatch();
 
   const loadOrders = useCallback(async () => {
+    setIsRefreshing(true);
+    setError(null);
     try {
       await dispatch(fetchOrders());
     } catch (err) {
       setError(err.message);
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, [dispatch]);
 
   useEffect(() => {
     setIsLoading(true);
-    setError(null);
-    loadOrders();
+    loadOrders().then(() => setIsLoading(false));
   }, [dispatch, loadOrders]);
 
   if (isLoading) {
@@ -44,6 +46,8 @@ const OrdersScreen = props => {
   }
   return (
     <FlatList
+      onRefresh={loadOrders}
+      refreshing={isRefreshing}
       data={orders}
       renderItem={({ item }) => {
         return (
