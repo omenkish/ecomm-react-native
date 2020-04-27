@@ -92,7 +92,7 @@ const EditProductScreen = props => {
     }
   }, [error]);
 
-  const submitHandler = useCallback(async () => {
+  const handleSubmit = useCallback(async () => {
     if (!formState.formIsValid) {
       Alert.alert('Wrong input!', 'Please check the errors in the form.', [
         { text: 'Okay' },
@@ -116,8 +116,8 @@ const EditProductScreen = props => {
   }, [dispatch, item ? item.id : '', formState]);
 
   useEffect(() => {
-    headerIcon(props, submitHandler);
-  }, [submitHandler]);
+    headerIcon(props, handleSubmit);
+  }, [handleSubmit]);
 
   const handleInputChange = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {

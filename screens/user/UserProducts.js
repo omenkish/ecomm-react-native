@@ -1,10 +1,11 @@
 import React from 'react';
-import { Alert, Button, FlatList } from 'react-native';
+import { Alert, Button, FlatList, Text, View } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import ProductItem from '../../components/shop/productItem';
 import Colors from '../../constants/Colors';
 import { deleteProduct } from '../../redux/actions/products';
+import { styles } from '../../components/UI/Loader';
 
 const UserProductsScreen = props => {
   const userProducts = useSelector(state => state.products.userProducts);
@@ -25,6 +26,13 @@ const UserProductsScreen = props => {
     props.navigation.navigate('Edit Product', { item });
   };
 
+  if (!userProducts.length) {
+    return (
+      <View style={styles.centered}>
+        <Text>You currently have no products!</Text>
+      </View>
+    );
+  }
   return (
     <FlatList
       data={userProducts}

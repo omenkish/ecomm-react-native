@@ -3,7 +3,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Platform, StyleSheet, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { NavigationContainer } from '@react-navigation/native';
 
 import ProductOverviewScreen from '../screens/shop/ProductsOverview';
 import ProductDetailsScreen from '../screens/shop/ProductDetails';
@@ -13,6 +20,11 @@ import OrdersScreen from '../screens/shop/Orders';
 import Colors from '../constants/Colors';
 import HeaderIcon from '../components/UI/HeaderIcon';
 import EditProductScreen from '../screens/user/EditProducts';
+import AuthScreen from '../screens/user/Auth';
+import StartupScreen from '../screens/Startup';
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/actions/auth';
+import { navigationRef } from './util';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +49,14 @@ const productsNavigator = () => {
               iconName="shopping-cart"
               iconTitle="Shopping Cart"
               handlePress={() => props.navigation.navigate('Cart')}
+            />
+          ),
+          headerLeft: () => (
+            <HeaderIcon
+              title="Menu"
+              iconName="bars"
+              iconTitle="menu"
+              handlePress={() => props.navigation.toggleDrawer()}
             />
           ),
         })}
@@ -156,6 +176,70 @@ const ShopTabNavigator = () => {
   );
 };
 
+const AuthNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: Platform.OS === 'android' ? Colors.primary : 'white',
+        },
+        headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+        headerTitleStyle: { fontFamily: 'OpenSans-Regular' },
+      }}>
+      <Stack.Screen
+        name="Auth"
+        component={AuthScreen}
+        options={{ title: 'Authenticate' }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const Drawer = createDrawerNavigator();
+
+const DrawerNavigation = () => {
+  return (
+    <Drawer.Navigator
+      drawerContent={props => <CustomDrawerContent {...props} />}
+      initialRouteName="ShopTabNavigator"
+      drawerContentOptions={{
+        activeTintColor: Colors.accent,
+        activeBackgroundColor: '#f5f5f5',
+        labelStyle: { fontFamily: 'OpenSans-Bold' },
+      }}>
+      <Drawer.Screen name="Products" component={ShopTabNavigator} />
+    </Drawer.Navigator>
+  );
+};
+
+const ContainerNavigator = () => {
+  return (
+    <NavigationContainer ref={navigationRef}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen
+          name="Startup"
+          component={StartupScreen}
+          options={{ title: 'Welcome to the shopping app' }}
+        />
+        <Stack.Screen
+          name="Auth"
+          component={AuthNavigator}
+          options={{ title: 'Authenticate' }}
+        />
+
+        <Stack.Screen
+          name="Products"
+          component={DrawerNavigation}
+          options={{ title: 'Products' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
 const styles = StyleSheet.create({
   tabLabel: {
     fontFamily: 'OpenSans-Bold',
@@ -169,4 +253,27 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
-export default ShopTabNavigator;
+
+function CustomDrawerContent(props) {
+  const dispatch = useDispatch();
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        icon={({ focused, color, size }) => (
+          <HeaderIcon
+            title="Logout"
+            iconName="power-off"
+            iconTitle="Logout"
+            color={color}
+          />
+        )}
+        label="Logout"
+        onPress={() => {
+          dispatch(logout());
+        }}
+      />
+    </DrawerContentScrollView>
+  );
+}
+export default ContainerNavigator;

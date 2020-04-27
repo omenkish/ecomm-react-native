@@ -6,7 +6,8 @@ export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
 export const SET_PRODUCTS = 'SET_PRODUCTS';
 
 export const fetchProducts = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { userId } = getState().auth;
     try {
       const response = await fetch(
         'https://react-native-shopping-fac8a.firebaseio.com/products.json',
@@ -22,7 +23,7 @@ export const fetchProducts = () => {
         loadedProducts.push(
           new Product(
             key,
-            'u1',
+            responseData[key].ownerId,
             responseData[key].title,
             responseData[key].imageUrl,
             responseData[key].description,
@@ -30,7 +31,11 @@ export const fetchProducts = () => {
           ),
         );
       }
-      dispatch({ type: SET_PRODUCTS, products: loadedProducts });
+      dispatch({
+        type: SET_PRODUCTS,
+        products: loadedProducts,
+        userProducts: loadedProducts.filter(prod => prod.ownerId === userId),
+      });
     } catch (error) {
       throw error;
     }
@@ -38,24 +43,30 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = productId => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { token } = getState().auth;
     const response = await fetch(
-      `https://react-native-shopping-fac8a.firebaseio.com/products/${productId}.json`,
+      `https://react-native-shopping-fac8a.firebaseio.com/products/${productId}.json?auth=${token}`,
       {
         method: 'DELETE',
       },
     );
 
+    if (!response.ok) {
+      throw new Error('Something went wrong!!');
+    }
     dispatch({ type: DELETE_PRODUCT, productId: productId });
   };
 };
 
 export const addProduct = product => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { token, userId } = getState().auth;
     const newProduct = { ...product };
     delete newProduct.id;
+    newProduct.ownerId = userId;
     const response = await fetch(
-      'https://react-native-shopping-fac8a.firebaseio.com/products.json',
+      `https://react-native-shopping-fac8a.firebaseio.com/products.json?auth=${token}`,
       {
         method: 'POST',
         headers: {
@@ -72,20 +83,21 @@ export const addProduct = product => {
 
     dispatch({
       type: CREATE_PRODUCT,
-      product: { ...product, id: responseData.name },
+      product: { ...newProduct, id: responseData.name },
     });
   };
 };
 
 export const updateProduct = product => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { token } = getState().auth;
     const newProduct = { ...product };
     delete newProduct.price;
 
     const response = await fetch(
       `https://react-native-shopping-fac8a.firebaseio.com/products/${
         product.id
-      }.json`,
+      }.json?auth=${token}`,
       {
         method: 'PATCH',
         headers: {

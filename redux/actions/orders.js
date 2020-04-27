@@ -4,10 +4,11 @@ export const ADD_ORDER = 'ADD_ORDER';
 export const SET_ORDERS = 'SET_ORDERS';
 
 export const addOrder = (cartItems, totalAmount) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { userId } = getState().auth;
     const date = new Date();
     const response = await fetch(
-      'https://react-native-shopping-fac8a.firebaseio.com/orders/u1.json',
+      `https://react-native-shopping-fac8a.firebaseio.com/orders/${userId}.json`,
       {
         method: 'POST',
         headers: {
@@ -39,10 +40,11 @@ export const addOrder = (cartItems, totalAmount) => {
 };
 
 export const fetchOrders = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { userId } = getState().auth;
     try {
       const response = await fetch(
-        'https://react-native-shopping-fac8a.firebaseio.com/orders/u1.json',
+        `https://react-native-shopping-fac8a.firebaseio.com/orders/${userId}.json`,
       );
 
       if (!response.ok) {
